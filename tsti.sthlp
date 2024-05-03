@@ -47,3 +47,7 @@ Jack Fitzgerald     {break}
 Vrije Universiteit Amsterdam     {break}
 j.f.fitzgerald@vu.nl    {break}
 {browse "https://jack-fitzgerald.github.io":https://jack-fitzgerald.github.io} 
+
+{References}
+Fitzgerald, J. (2024). "The Need for Equivalence Testing in Economics." Working paper.
+Goeman, J. J., Solari, A., and Stijnen, T. (2024). "Three-sided hypothesis testing: Simultaneous testing of superiority, equivalence and inferiority." Statistics in Medicine 29(20), 2117-2125.
