@@ -15,7 +15,7 @@
 
 {p 4 4 2}{bf:Arguments}
 
-{col 5}{it:option}{col 21}{it:Description}
+{col 5}{it:Argument}{col 21}{it:Description}
 {space 4}{hline}
 {col 5}{it:estimate}{col 21}The estimate of interest.
 {col 5}{it:se}{col 21}The standard error of the estimate of interest. Must be > 0.
@@ -25,9 +25,10 @@
 
 {p 4 4 2}{bf:Options}
 
-{col 5}{it:option}{col 21}{it:Description}
+{col 5}{it:Option}{col 21}{it:Description}
 {space 4}{hline}
-{col 5}df({it:real}){col 21}Degrees of freedom of the estimate of interest. If specified, must be > 0. Exact (rather than asymptotically approximate) bounds and testing results are produced if this option is specified.
+{col 5}df({it:real}){col 21}Degrees of freedom of the estimate of interest. If specified, must be > 0.
+{col 5}{col 21}Exact (rather than asymptotically approximate) bounds and testing results are produced if this option is specified.
 {col 5}alpha({it:real}){col 21}The significance level of the test. Defaults to 0.05. If specified, it must be true that 0 < alpha < 0.5.
 {col 5}power({it:real}){col 21}The power level of the test. Defaults to 0.8. If specified, it must be true that 0.5 < power < 1.
 {space 4}{hline}
