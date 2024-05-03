@@ -1,0 +1,9 @@
+v 1.0.0
+d Jack Fitzgerald
+d Vrije Universiteit Amsterdam
+d j.f.fitzgerald@vu.nl
+d https://github.com/jack-fitzgerald/tsti
+
+d 'tsti': Immediate application of the three-sided testing framework in Stata
+
+p tsti
