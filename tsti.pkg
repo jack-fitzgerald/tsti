@@ -1,0 +1,7 @@
+v 2.3.0
+d 'tsti': Immediate application of the three-sided testing framework in Stata
+d 
+d Distribution-Date:  3 May 2024
+d 
+F tsti.ado
+F tsti.sthlp
