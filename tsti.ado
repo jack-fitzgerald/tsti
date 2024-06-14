@@ -251,7 +251,7 @@ program define tsti, rclass
 		disp ""
 		disp "Asymptotically approximate equivalence confidence intervals (ECIs) and three-sided testing (TST) results reported"
 		disp "If using for academic/research purposes, please cite the paper underlying this program:"
-		disp "Fitzgerald, Jack (2024). The Need for Equivalence Testing in Economics. Working paper."
+		disp "Fitzgerald, Jack (2024). The Need for Equivalence Testing in Economics. Institute for Replication Discussion Paper Series No. 125. https://www.econstor.eu/handle/10419/296190."
 		
 	}
 	
@@ -372,7 +372,7 @@ program define tsti, rclass
 		disp ""
 		disp "Exact equivalence confidence intervals (ECIs) and three-sided testing (TST) results reported"
 		disp "If using for academic/research purposes, please cite the paper underlying this program:"
-		disp "Fitzgerald, Jack (2024). The Need for Equivalence Testing in Economics. Working paper."
+		disp "Fitzgerald, Jack (2024). The Need for Equivalence Testing in Economics. Institute for Replication Discussion Paper Series No. 125. https://www.econstor.eu/handle/10419/296190."
 		
 	}
 	
