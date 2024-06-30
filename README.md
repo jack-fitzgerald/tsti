@@ -1,4 +1,4 @@
-#tsti: Three-sided testing in Stata
+# tsti: Three-sided testing in Stata
 
 You can install this package directly into Stata with the following code:
 ```
