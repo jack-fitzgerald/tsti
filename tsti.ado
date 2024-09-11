@@ -161,6 +161,8 @@ program define tsti, rclass
 		mata: mm_root(epsilon = ., &power_diff(), 0, invnormal(`power') + invnormal(1 - `alpha'))
 		mata: st_numscalar("ROSE_SE", epsilon)
 		mata: st_local("ROSE_SE", strofreal(epsilon))
+		mata: mata drop power_func()
+		mata: mata drop power_diff()
 		
 		*Generate the bounds of the ROSE
 		local ROSE_LB = `estimate' - `ROSE_SE'*`se'
@@ -288,6 +290,8 @@ program define tsti, rclass
 		mata: mm_root(epsilon = ., &power_diff(), 0, invnt(`df', invt(`df', 1 - `alpha'), `power'))
 		mata: st_numscalar("ROSE_SE", epsilon)
 		mata: st_local("ROSE_SE", strofreal(epsilon))
+		mata: mata drop power_func()
+		mata: mata drop power_diff()
 		
 		*Generate the bounds of the ROSE
 		local ROSE_LB = `estimate' - `ROSE_SE'*`se'
