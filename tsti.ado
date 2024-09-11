@@ -163,7 +163,7 @@ program define tsti, rclass
 		
 		*Store the z-statistic and p-value of the two-sided test for bounding above the ROPE
 		mat test_mat[1, 1] = (`estimate' - `rope_ub')/`se'
-		mat test_mat[1, 2] = (1 - normal(test_mat[1, 1]))*2
+		mat test_mat[1, 2] = min((1 - normal(test_mat[1, 1]))*2, 1)
 		
 		*If the lower bound of the ROPE is the relevant TOST bound...
 		if (`bound' == `rope_lb') {
@@ -187,7 +187,7 @@ program define tsti, rclass
 		
 		*Store the z-statistic and p-value of the two-sided test for bounding below the ROPE
 		mat test_mat[3, 1] = (`estimate' - `rope_lb')/`se'
-		mat test_mat[3, 2] = normal(test_mat[3, 1])*2
+		mat test_mat[3, 2] = min(normal(test_mat[3, 1])*2, 1)
 		
 		*If no p-value is < alpha...
 		if (test_mat[1, 2] >= `alpha' & test_mat[2, 2] >= `alpha' & test_mat[3, 2] >= `alpha') {
@@ -284,7 +284,7 @@ program define tsti, rclass
 		
 		*Store the t-statistic and p-value of the two-sided test for bounding above the ROPE
 		mat test_mat[1, 1] = (`estimate' - `rope_ub')/`se'
-		mat test_mat[1, 2] = (1 - t(`df', test_mat[1, 1]))*2
+		mat test_mat[1, 2] = min((1 - t(`df', test_mat[1, 1]))*2, 1)
 		
 		*If the lower bound of the ROPE is the relevant TOST bound...
 		if (`bound' == `rope_lb') {
@@ -308,7 +308,7 @@ program define tsti, rclass
 		
 		*Store the t-statistic and p-value of the two-sided test for bounding below the ROPE
 		mat test_mat[3, 1] = (`estimate' - `rope_lb')/`se'
-		mat test_mat[3, 2] = t(`df', test_mat[3, 1])*2
+		mat test_mat[3, 2] = min(t(`df', test_mat[3, 1])*2, 1)
 		
 		*If no p-value is < alpha...
 		if (test_mat[1, 2] >= `alpha' & test_mat[2, 2] >= `alpha' & test_mat[3, 2] >= `alpha') {
