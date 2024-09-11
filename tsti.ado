@@ -1,6 +1,6 @@
 cap program drop tsti
 program define tsti, rclass
-	*Syntax: estimate se rope_lb rope_ub, options. df has a second companion 'ghost' option designed to assess whether it has been provied
+	*Syntax: estimate se rope_lb rope_ub, options. df has a second companion 'ghost' option designed to see whether it has been provied
 	
 	*Get tokens
 	gettoken estimate 0 : 0, parse(" ,")
