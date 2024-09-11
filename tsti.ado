@@ -155,6 +155,7 @@ program define tsti, rclass
 		local CI_UB = `estimate' + invnormal(1 - `alpha'/2)*`se'
 		
 		*Enter mata to obtain number of standard errors necessary to produce ROSE
+		mata: mata clear
 		mata: function power_func(epsilon) return(normal(epsilon - invnormal(1 - `alpha')) + normal(-epsilon - invnormal(1 - `alpha')))
 		mata: function power_diff(epsilon) return(power_func(epsilon) - `power')
 		mata: mm_root(epsilon = ., &power_diff(), 0, invnormal(`power') + invnormal(1 - `alpha'))
@@ -281,6 +282,7 @@ program define tsti, rclass
 		local CI_UB = `estimate' + invt(`df', 1 - `alpha'/2)*`se'
 		
 		*Enter mata to obtain number of standard errors necessary to produce ROSE
+		mata: mata clear
 		mata: function power_func(epsilon) return(nt(`df', invt(`df', 1 - `alpha'), epsilon) + nt(`df', invt(`df', 1 - `alpha'), -epsilon))
 		mata: function power_diff(epsilon) return(power_func(epsilon) - `power')
 		mata: mm_root(epsilon = ., &power_diff(), 0, invnt(`df', invt(`df', 1 - `alpha'), `power'))
