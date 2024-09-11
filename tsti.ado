@@ -32,18 +32,6 @@ program define tsti, rclass
 		
 	}
 	
-	*Check if moremata is installed
-	capture which mf_mm_root.hlp
-	
-	*If moremata is not installed...
-	if (_rc == 111) {
-		
-		*... then stop the function
-		display "Command 'tsti' requires command mm_root. To install, type 'ssc install moremata'"
-		exit
-		
-	}
-	
 	syntax [, df(real 10000000000000000000) alpha(real 0.05) power(real 0.8) df2(real 10000000000000000000)]
 	
 	*************************
@@ -135,9 +123,6 @@ program define tsti, rclass
 		mat test_mat[3, 3] = 0
 		
 	}
-	
-	*Clear mata
-	clear mata
 	
 	************************
 	***** SUB-ROUTINES *****
