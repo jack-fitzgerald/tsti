@@ -161,9 +161,9 @@ program define tsti, rclass
 		local ROSE_LB = `estimate' - `ROSE_SE'*`se'
 		local ROSE_UB = `estimate' + `ROSE_SE'*`se'
 		
-		*Store the z-statistic and p-value of the one-sided test for bounding above the ROPE
+		*Store the z-statistic and p-value of the two-sided test for bounding above the ROPE
 		mat test_mat[1, 1] = (`estimate' - `rope_ub')/`se'
-		mat test_mat[1, 2] = 1 - normal(test_mat[1, 1])
+		mat test_mat[1, 2] = (1 - normal(test_mat[1, 1]))*2
 		
 		*If the lower bound of the ROPE is the relevant TOST bound...
 		if (`bound' == `rope_lb') {
@@ -185,9 +185,9 @@ program define tsti, rclass
 			
 		}
 		
-		*Store the z-statistic and p-value of the one-sided test for bounding below the ROPE
+		*Store the z-statistic and p-value of the two-sided test for bounding below the ROPE
 		mat test_mat[3, 1] = (`estimate' - `rope_lb')/`se'
-		mat test_mat[3, 2] = normal(test_mat[3, 1])
+		mat test_mat[3, 2] = normal(test_mat[3, 1])*2
 		
 		*If no p-value is < alpha...
 		if (test_mat[1, 2] >= `alpha' & test_mat[2, 2] >= `alpha' & test_mat[3, 2] >= `alpha') {
@@ -197,7 +197,7 @@ program define tsti, rclass
 			
 		}
 		
-		*If the p-value of the one-sided test for bounding above the ROPE < alpha...
+		*If the p-value of the two-sided test for bounding above the ROPE < alpha...
 		if (test_mat[1, 2] < `alpha') {
 			
 			*Then store the conclusion
@@ -213,7 +213,7 @@ program define tsti, rclass
 			
 		}
 		
-		*If the p-value of the one-sided test for bounding below the ROPE < alpha...
+		*If the p-value of the two-sided test for bounding below the ROPE < alpha...
 		if (test_mat[3, 2] < `alpha') {
 			
 			*Then store the conclusion
@@ -239,9 +239,9 @@ program define tsti, rclass
 		disp ""
 		disp in smcl in gr "{ralign 46: Testing results}" 							   _col(47) " {c |} " _col(52) in gr "z-statistic"			  _col(67) in gr "p-value"	    _col(80) in gr "Relevant"
 		disp in smcl in gr "{hline 47}{c +}{hline 40}"
-		disp in smcl in gr "{ralign 46:Test: Estimate bounded above ROPE (one-sided)}" _col(47) " {c |} " _col(52) as result %9.3f test_mat[1, 1] _col(64) %9.3f test_mat[1, 2]	_col(76) %9.0f  test_mat[1, 3]
+		disp in smcl in gr "{ralign 46:Test: Estimate bounded above ROPE (two-sided)}" _col(47) " {c |} " _col(52) as result %9.3f test_mat[1, 1] _col(64) %9.3f test_mat[1, 2]	_col(76) %9.0f  test_mat[1, 3]
 		disp in smcl in gr "{ralign 46:Test: Estimate bounded within ROPE (TOST)}"     _col(47) " {c |} " _col(52) as result %9.3f test_mat[2, 1] _col(64) %9.3f test_mat[2, 2]	_col(76) %9.0f  test_mat[2, 3]
-		disp in smcl in gr "{ralign 46:Test: Estimate bounded below ROPE (one-sided)}" _col(47) " {c |} " _col(52) as result %9.3f test_mat[3, 1] _col(64) %9.3f test_mat[3, 2]	_col(76) %9.0f  test_mat[3, 3]
+		disp in smcl in gr "{ralign 46:Test: Estimate bounded below ROPE (two-sided)}" _col(47) " {c |} " _col(52) as result %9.3f test_mat[3, 1] _col(64) %9.3f test_mat[3, 2]	_col(76) %9.0f  test_mat[3, 3]
 		
 		*************************
 		*** PRINT DISCLAIMERS ***
@@ -282,9 +282,9 @@ program define tsti, rclass
 		local ROSE_LB = `estimate' - `ROSE_SE'*`se'
 		local ROSE_UB = `estimate' + `ROSE_SE'*`se'
 		
-		*Store the t-statistic and p-value of the one-sided test for bounding above the ROPE
+		*Store the t-statistic and p-value of the two-sided test for bounding above the ROPE
 		mat test_mat[1, 1] = (`estimate' - `rope_ub')/`se'
-		mat test_mat[1, 2] = 1 - t(`df', test_mat[1, 1])
+		mat test_mat[1, 2] = (1 - t(`df', test_mat[1, 1]))*2
 		
 		*If the lower bound of the ROPE is the relevant TOST bound...
 		if (`bound' == `rope_lb') {
@@ -306,9 +306,9 @@ program define tsti, rclass
 			
 		}
 		
-		*Store the t-statistic and p-value of the one-sided test for bounding below the ROPE
+		*Store the t-statistic and p-value of the two-sided test for bounding below the ROPE
 		mat test_mat[3, 1] = (`estimate' - `rope_lb')/`se'
-		mat test_mat[3, 2] = t(`df', test_mat[3, 1])
+		mat test_mat[3, 2] = t(`df', test_mat[3, 1])*2
 		
 		*If no p-value is < alpha...
 		if (test_mat[1, 2] >= `alpha' & test_mat[2, 2] >= `alpha' & test_mat[3, 2] >= `alpha') {
@@ -318,7 +318,7 @@ program define tsti, rclass
 			
 		}
 		
-		*If the p-value of the one-sided test for bounding above the ROPE < alpha...
+		*If the p-value of the two-sided test for bounding above the ROPE < alpha...
 		if (test_mat[1, 2] < `alpha') {
 			
 			*Then store the conclusion
@@ -334,7 +334,7 @@ program define tsti, rclass
 			
 		}
 		
-		*If the p-value of the one-sided test for bounding below the ROPE < alpha...
+		*If the p-value of the two-sided test for bounding below the ROPE < alpha...
 		if (test_mat[3, 2] < `alpha') {
 			
 			*Then store the conclusion
@@ -360,9 +360,9 @@ program define tsti, rclass
 		disp ""
 		disp in smcl in gr "{ralign 46: Testing results}" 							   _col(47) " {c |} " _col(52) in gr "z-statistic"			  _col(67) in gr "p-value"	    _col(80) in gr "Relevant"
 		disp in smcl in gr "{hline 47}{c +}{hline 40}"
-		disp in smcl in gr "{ralign 46:Test: Estimate bounded above ROPE (one-sided)}" _col(47) " {c |} " _col(52) as result %9.3f test_mat[1, 1] _col(64) %9.3f test_mat[1, 2]	_col(76) %9.0f  test_mat[1, 3]
+		disp in smcl in gr "{ralign 46:Test: Estimate bounded above ROPE (two-sided)}" _col(47) " {c |} " _col(52) as result %9.3f test_mat[1, 1] _col(64) %9.3f test_mat[1, 2]	_col(76) %9.0f  test_mat[1, 3]
 		disp in smcl in gr "{ralign 46:Test: Estimate bounded within ROPE (TOST)}"     _col(47) " {c |} " _col(52) as result %9.3f test_mat[2, 1] _col(64) %9.3f test_mat[2, 2]	_col(76) %9.0f  test_mat[2, 3]
-		disp in smcl in gr "{ralign 46:Test: Estimate bounded below ROPE (one-sided)}" _col(47) " {c |} " _col(52) as result %9.3f test_mat[3, 1] _col(64) %9.3f test_mat[3, 2]	_col(76) %9.0f  test_mat[3, 3]
+		disp in smcl in gr "{ralign 46:Test: Estimate bounded below ROPE (two-sided)}" _col(47) " {c |} " _col(52) as result %9.3f test_mat[3, 1] _col(64) %9.3f test_mat[3, 2]	_col(76) %9.0f  test_mat[3, 3]
 		
 		*************************
 		*** PRINT DISCLAIMERS ***
