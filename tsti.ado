@@ -39,7 +39,7 @@ program define tsti, rclass
 	if (_rc == 111) {
 		
 		*... then stop the function
-		display "Command 'tst' requires command mm_root. To install, type 'ssc install moremata'"
+		display "Command 'tsti' requires command mm_root. To install, type 'ssc install moremata'"
 		exit
 		
 	}
@@ -149,6 +149,10 @@ program define tsti, rclass
 		*Generate the bounds of the ECI
 		local ECI_LB = `estimate' - invnormal(1 - `alpha')*`se'
 		local ECI_UB = `estimate' + invnormal(1 - `alpha')*`se'
+
+		*Generate the bounds of the confidence interval
+		local CI_LB = `estimate' - invnormal(1 - `alpha'/2)*`se'
+		local CI_UB = `estimate' + invnormal(1 - `alpha'/2)*`se'
 		
 		*Enter mata to obtain number of standard errors necessary to produce ROSE
 		mata: function power_func(epsilon) return(normal(epsilon - invnormal(1 - `alpha')) + normal(-epsilon - invnormal(1 - `alpha')))
@@ -229,7 +233,8 @@ program define tsti, rclass
 		disp in smcl in gr "{ralign 59: Approximate bounds}" 																_col(59) " {c |}" 	_col(71) in gr "Lower bound"  		 _col(94) in gr "Upper bound"
 		disp in smcl in gr "{hline 60}{c +}{hline 52}"
 		disp in smcl in gr "{ralign 59:Region of practical equivalence (ROPE)}"        										_col(59) " {c |} " 	_col(71) as result %9.3f `rope_lb'   _col(94) %9.3f  `rope_ub'
-		disp in smcl in gr "{ralign 59:`confidence_pct'% equivalence confidence interval (ECI)}"    						_col(59) " {c |} " 	_col(71) as result %9.3f `ECI_LB'    _col(94) %9.3f  `ECI_UB'      
+		disp in smcl in gr "{ralign 59:`confidence_pct'% equivalence confidence interval (ECI)}"    						_col(59) " {c |} " 	_col(71) as result %9.3f `ECI_LB'    _col(94) %9.3f  `ECI_UB'
+		disp in smcl in gr "{ralign 59:`confidence_pct'% confidence interval}"    						_col(59) " {c |} " 	_col(71) as result %9.3f `CI_LB'    _col(94) %9.3f  `CI_UB'   
 		disp in smcl in gr "{ralign 59:`confidence_pct'% region of statistical equivalence (ROSE) with `power_pct'% power}" _col(59) " {c |} " 	_col(71) as result %9.3f `ROSE_LB'   _col(94) %9.3f  `ROSE_UB'      
 		
 		*********************
@@ -270,6 +275,10 @@ program define tsti, rclass
 		*Generate the bounds of the ECI
 		local ECI_LB = `estimate' - invt(`df', 1 - `alpha')*`se'
 		local ECI_UB = `estimate' + invt(`df', 1 - `alpha')*`se'
+
+		*Generate the bounds of the confidence interval
+		local CI_LB = `estimate' - invt(`df', 1 - `alpha'/2)*`se'
+		local CI_UB = `estimate' + invt(`df', 1 - `alpha'/2)*`se'
 		
 		*Enter mata to obtain number of standard errors necessary to produce ROSE
 		mata: function power_func(epsilon) return(nt(`df', invt(`df', 1 - `alpha'), epsilon) + nt(`df', invt(`df', 1 - `alpha'), -epsilon))
@@ -350,7 +359,8 @@ program define tsti, rclass
 		disp in smcl in gr "{ralign 59: Exact bounds}" 																		_col(59) " {c |}" 	_col(71) in gr "Lower bound"  		 _col(94) in gr "Upper bound"
 		disp in smcl in gr "{hline 60}{c +}{hline 52}"
 		disp in smcl in gr "{ralign 59:Region of practical equivalence (ROPE)}"        										_col(59) " {c |} " 	_col(71) as result %9.3f `rope_lb'   _col(94) %9.3f  `rope_ub'
-		disp in smcl in gr "{ralign 59:`confidence_pct'% equivalence confidence interval (ECI)}"    						_col(59) " {c |} " 	_col(71) as result %9.3f `ECI_LB'    _col(94) %9.3f  `ECI_UB'      
+		disp in smcl in gr "{ralign 59:`confidence_pct'% equivalence confidence interval (ECI)}"    						_col(59) " {c |} " 	_col(71) as result %9.3f `ECI_LB'    _col(94) %9.3f  `ECI_UB'
+		disp in smcl in gr "{ralign 59:`confidence_pct'% confidence interval}"    						_col(59) " {c |} " 	_col(71) as result %9.3f `CI_LB'    _col(94) %9.3f  `CI_UB'  
 		disp in smcl in gr "{ralign 59:`confidence_pct'% region of statistical equivalence (ROSE) with `power_pct'% power}" _col(59) " {c |} " 	_col(71) as result %9.3f `ROSE_LB'   _col(94) %9.3f  `ROSE_UB'     
 		
 		*********************
@@ -383,6 +393,8 @@ program define tsti, rclass
 	return local ROPE_UB = `rope_ub'
 	return local alpha = `alpha'
 	return local power = `power'
+	return local CI_LB = `CI_LB'
+	return local CI_UB = `CI_UB'
 	return local ECI_LB = `ECI_LB'
 	return local ECI_UB = `ECI_UB'
 	return local ROSE_LB = `ROSE_LB'
