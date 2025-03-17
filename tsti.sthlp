@@ -5,12 +5,12 @@
 {title:tsti}
 
 {p 4 4 2}
-{bf:tsti} Immediate application of the three-sided testing (TST) framework (Goeman, Solari, and Stijnen 2010) in Stata
+{bf:tsti} Immediate application of the three-sided testing (TST) framework in Stata (Goeman, Solari, and Stijnen 2010)
 
 
 {title:Syntax}
 
-{p 8 8 2} {bf:tsti} {it:estimate} {it:se} {it:rope_lb} {it:rope_ub} [, df({it:real}) alpha({it:real}) power({it:real})]
+{p 8 8 2} {bf:tsti} {it:estimate} {it:se} {it:rope_lb} {it:rope_ub} [, df({it:real}) alpha({it:real})]
 
 
 {p 4 4 2}{bf:Arguments}
@@ -30,7 +30,6 @@
 {col 5}df({it:real}){col 21}Degrees of freedom of the estimate of interest. If specified, must be > 0.
 {col 5}{col 21}Exact (rather than asymptotically approximate) bounds and testing results are produced if this option is specified.
 {col 5}alpha({it:real}){col 21}The significance level of the test. Defaults to 0.05. If specified, it must be true that 0 < alpha < 0.5.
-{col 5}power({it:real}){col 21}The power level of the test. Defaults to 0.8. If specified, it must be true that 0.5 < power < 1.
 {space 4}{hline}
 
 {title:Examples}
@@ -38,7 +37,6 @@
         . tsti 0.02 0.03 -0.2 0.2
 
         . tsti -0.4 0.01 0 0.5
-
 
 {title:Author}
 
@@ -49,5 +47,6 @@ j.f.fitzgerald@vu.nl    {break}
 {browse "https://jack-fitzgerald.github.io":https://jack-fitzgerald.github.io} 
 
 {References}
-Fitzgerald, Jack (2024). "The Need for Equivalence Testing in Economics". Institute for Replication Discussion Paper Series No. 125. https://www.econstor.eu/handle/10419/296190.
-Goeman, J. J., Solari, A., and Stijnen, T. (2024). "Three-sided hypothesis testing: Simultaneous testing of superiority, equivalence and inferiority." Statistics in Medicine 29(20), 2117-2125.
+Fitzgerald, J. (2025). "The Need for Equivalence Testing in Economics". MetaArXiv, https://doi.org/10.31222/osf.io/d7sqr_v1.
+Goeman, J. J., Solari, A., and Stijnen, T. (2010). "Three-sided hypothesis testing: Simultaneous testing of superiority, equivalence and inferiority." Statistics in Medicine 29(20), 2117-2125.
+Isager, P. & Fitzgerald, J. (2024). "Three-Sided Testing to Establish Practical Significance: A Tutorial." PsyArXiv, https://doi.org/10.31234/osf.io/8y925.
