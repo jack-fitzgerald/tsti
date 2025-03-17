@@ -32,7 +32,7 @@ program define tsti, rclass
 		
 	}
 	
-	syntax [, df(real 10000000000000000000) alpha(real 0.05) power(real 0.8) df2(real 10000000000000000000)]
+	syntax [, df(real 10000000000000000000) alpha(real 0.05) df2(real 10000000000000000000)]
 	
 	*************************
 	***** ERRORS & PREP *****
@@ -43,15 +43,6 @@ program define tsti, rclass
 		
 		*... then stop the function
 		display "'alpha' must be between 0 and 0.5"
-		exit
-		
-	}
-	
-	*If power is not between 0.5 and 1...
-	if (`power' <= 0.5 | `power' >= 1) {
-		
-		*... then stop the function
-		display "'power' must be between 0.5 and 1"
 		exit
 		
 	}
@@ -87,9 +78,6 @@ program define tsti, rclass
 	
 	*Generate confidence percentage
 	local confidence_pct = round(1 - `alpha', .01)*100
-	
-	*Generate power percentage
-	local power_pct = round(`power', .01)*100
 	
 	*Generate a test matrix
 	matrix test_mat = J(3, 3, .)
@@ -135,9 +123,52 @@ program define tsti, rclass
 		local ECI_LB = `estimate' - invnormal(1 - `alpha')*`se'
 		local ECI_UB = `estimate' + invnormal(1 - `alpha')*`se'
 
-		*Generate the bounds of the confidence interval
-		local CI_LB = `estimate' - invnormal(1 - `alpha'/2)*`se'
-		local CI_UB = `estimate' + invnormal(1 - `alpha'/2)*`se'
+		*Generate the bounds of the classic confidence interval
+		local CI_classic_LB = `estimate' - invnormal(1 - `alpha'/2)*`se'
+		local CI_classic_UB = `estimate' + invnormal(1 - `alpha'/2)*`se'
+
+		*Generate the bounds of the TST confidence interval
+		if (`estimate' < `rope_lb' + invnormal(1 - `alpha')*`se') {
+
+			local CI_TST_LB = `estimate' - invnormal(1 - `alpha')*`se'
+
+		}
+		if (`estimate' >= `rope_lb' + invnormal(1 - `alpha')*`se' & `estimate' <= `rope_lb' + invnormal(1 - `alpha'/2)*`se') {
+
+			local CI_TST_LB = `rope_lb'
+
+		}
+		if (`estimate' > `rope_lb' + invnormal(1 - `alpha'/2)*`se' & `estimate' < `rope_ub' + invnormal(1 - `alpha'/2)*`se') {
+
+			local CI_TST_LB = `estimate' - invnormal(1 - `alpha'/2)*`se'
+
+		}
+		if (`estimate' >= `rope_ub' + invnormal(1 - `alpha'/2)*`se') {
+
+			local CI_TST_LB = `rope_ub'
+
+		}
+		if (`estimate' <= `rope_lb' - invnormal(1 - `alpha'/2)*`se') {
+
+			local CI_TST_UB = `rope_lb'
+
+		}
+		if (`estimate' > `rope_lb' - invnormal(1 - `alpha'/2)*`se' & `estimate' < `rope_ub' - invnormal(1 - `alpha'/2)*`se') {
+
+			local CI_TST_UB = `estimate' + invnormal(1 - `alpha'/2)*`se'
+
+		}
+		if (`estimate' >= `rope_ub' - invnormal(1 - `alpha'/2)*`se' & `estimate' <= `rope_ub' - invnormal(1 - `alpha')*`se') {
+
+			local CI_TST_UB = `rope_ub'
+
+		}
+		if (`estimate' > `rope_ub' - invnormal(1 - `alpha')*`se') {
+
+			local CI_TST_UB = `estimate' + invnormal(1 - `alpha')*`se'
+
+		}
+		
 		
 		*Store the z-statistic and p-value of the two-sided test for bounding above the ROPE
 		mat test_mat[1, 1] = (`estimate' - `rope_ub')/`se'
@@ -207,8 +238,9 @@ program define tsti, rclass
 		disp in smcl in gr "{ralign 59: Approximate bounds}" 																_col(59) " {c |}" 	_col(71) in gr "Lower bound"  		 _col(94) in gr "Upper bound"
 		disp in smcl in gr "{hline 60}{c +}{hline 52}"
 		disp in smcl in gr "{ralign 59:Region of practical equivalence (ROPE)}"        										_col(59) " {c |} " 	_col(71) as result %9.3f `rope_lb'   _col(94) %9.3f  `rope_ub'
-		disp in smcl in gr "{ralign 59:`confidence_pct'% equivalence confidence interval (ECI)}"    						_col(59) " {c |} " 	_col(71) as result %9.3f `ECI_LB'    _col(94) %9.3f  `ECI_UB'
-		disp in smcl in gr "{ralign 59:`confidence_pct'% confidence interval}"    						_col(59) " {c |} " 	_col(71) as result %9.3f `CI_LB'    _col(94) %9.3f  `CI_UB'   
+		disp in smcl in gr "{ralign 59:`confidence_pct'% TST confidence interval (for precision)}"    						_col(59) " {c |} " 	_col(71) as result %9.3f `CI_TST_LB'    _col(94) %9.3f  `CI_TST_UB'   
+		disp in smcl in gr "{ralign 59:`confidence_pct'% equivalence confidence interval (for conclusions)}"    						_col(59) " {c |} " 	_col(71) as result %9.3f `ECI_LB'    _col(94) %9.3f  `ECI_UB'
+		disp in smcl in gr "{ralign 59:`confidence_pct'% classic confidence interval (for conclusions)}"    						_col(59) " {c |} " 	_col(71) as result %9.3f `CI_classic_LB'    _col(94) %9.3f  `CI_classic_UB'   
 		
 		*********************
 		*** RESULTS TABLE ***
@@ -228,8 +260,9 @@ program define tsti, rclass
 		disp "`conclusion'"
 		disp ""
 		disp "Asymptotically approximate equivalence confidence intervals (ECIs) and three-sided testing (TST) results reported"
-		disp "If using for academic/research purposes, please cite the paper underlying this program:"
-		disp "Fitzgerald, Jack (2024). The Need for Equivalence Testing in Economics. Institute for Replication Discussion Paper Series No. 125. https://www.econstor.eu/handle/10419/296190."
+		disp "If using for academic/research purposes, please cite the papers underlying this program:"
+		disp "Fitzgerald, J. (2025). The Need for Equivalence Testing in Economics. MetaArXiv, https://doi.org/10.31222/osf.io/d7sqr_v1."
+		disp "Isager, P. & Fitzgerald, J. (2024). Three-Sided Testing to Establish Practical Significance: A Tutorial. https://doi.org/10.31234/osf.io/8y925."
 		
 	}
 	
@@ -244,14 +277,56 @@ program define tsti, rclass
 			exit
 			
 		}
+
+		*Generate the bounds of the TST confidence interval
+		if (`estimate' < `rope_lb' + invt(`df', 1 - `alpha')*`se') {
+
+			local CI_TST_LB = `estimate' - invt(`df', 1 - `alpha')*`se'
+
+		}
+		if (`estimate' >= `rope_lb' + invt(`df', 1 - `alpha')*`se' & `estimate' <= `rope_lb' + invt(`df', 1 - `alpha'/2)*`se') {
+
+			local CI_TST_LB = `rope_lb'
+
+		}
+		if (`estimate' > `rope_lb' + invt(`df', 1 - `alpha'/2)*`se' & `estimate' < `rope_ub' + invt(`df', 1 - `alpha'/2)*`se') {
+
+			local CI_TST_LB = `estimate' - invt(`df', 1 - `alpha'/2)*`se'
+
+		}
+		if (`estimate' >= `rope_ub' + invt(`df', 1 - `alpha'/2)*`se') {
+
+			local CI_TST_LB = `rope_ub'
+
+		}
+		if (`estimate' <= `rope_lb' - invt(`df', 1 - `alpha'/2)*`se') {
+
+			local CI_TST_UB = `rope_lb'
+
+		}
+		if (`estimate' > `rope_lb' - invt(`df', 1 - `alpha'/2)*`se' & `estimate' < `rope_ub' - invt(`df', 1 - `alpha'/2)*`se') {
+
+			local CI_TST_UB = `estimate' + invt(`df', 1 - `alpha'/2)*`se'
+
+		}
+		if (`estimate' >= `rope_ub' - invt(`df', 1 - `alpha'/2)*`se' & `estimate' <= `rope_ub' - invt(`df', 1 - `alpha')*`se') {
+
+			local CI_TST_UB = `rope_ub'
+
+		}
+		if (`estimate' > `rope_ub' - invt(`df', 1 - `alpha')*`se') {
+
+			local CI_TST_UB = `estimate' + invt(`df', 1 - `alpha')*`se'
+
+		}
 		
 		*Generate the bounds of the ECI
 		local ECI_LB = `estimate' - invt(`df', 1 - `alpha')*`se'
 		local ECI_UB = `estimate' + invt(`df', 1 - `alpha')*`se'
 
-		*Generate the bounds of the confidence interval
-		local CI_LB = `estimate' - invt(`df', 1 - `alpha'/2)*`se'
-		local CI_UB = `estimate' + invt(`df', 1 - `alpha'/2)*`se'
+		*Generate the bounds of the classic confidence interval
+		local CI_classic_LB = `estimate' - invt(`df', 1 - `alpha'/2)*`se'
+		local CI_classic_UB = `estimate' + invt(`df', 1 - `alpha'/2)*`se'
 		
 		*Store the t-statistic and p-value of the two-sided test for bounding above the ROPE
 		mat test_mat[1, 1] = (`estimate' - `rope_ub')/`se'
@@ -321,8 +396,9 @@ program define tsti, rclass
 		disp in smcl in gr "{ralign 59: Exact bounds}" 																		_col(59) " {c |}" 	_col(71) in gr "Lower bound"  		 _col(94) in gr "Upper bound"
 		disp in smcl in gr "{hline 60}{c +}{hline 52}"
 		disp in smcl in gr "{ralign 59:Region of practical equivalence (ROPE)}"        										_col(59) " {c |} " 	_col(71) as result %9.3f `rope_lb'   _col(94) %9.3f  `rope_ub'
-		disp in smcl in gr "{ralign 59:`confidence_pct'% equivalence confidence interval (ECI)}"    						_col(59) " {c |} " 	_col(71) as result %9.3f `ECI_LB'    _col(94) %9.3f  `ECI_UB'
-		disp in smcl in gr "{ralign 59:`confidence_pct'% confidence interval}"    						_col(59) " {c |} " 	_col(71) as result %9.3f `CI_LB'    _col(94) %9.3f  `CI_UB'     
+		disp in smcl in gr "{ralign 59:`confidence_pct'% TST confidence interval (for precision)}"    						_col(59) " {c |} " 	_col(71) as result %9.3f `CI_TST_LB'    _col(94) %9.3f  `CI_TST_UB'   
+		disp in smcl in gr "{ralign 59:`confidence_pct'% equivalence confidence interval (for conclusions)}"    						_col(59) " {c |} " 	_col(71) as result %9.3f `ECI_LB'    _col(94) %9.3f  `ECI_UB'
+		disp in smcl in gr "{ralign 59:`confidence_pct'% classic confidence interval (for conclusions)}"    						_col(59) " {c |} " 	_col(71) as result %9.3f `CI_classic_LB'    _col(94) %9.3f  `CI_classic_UB'   
 		
 		*********************
 		*** RESULTS TABLE ***
@@ -342,8 +418,9 @@ program define tsti, rclass
 		disp "`conclusion'"
 		disp ""
 		disp "Exact equivalence confidence intervals (ECIs) and three-sided testing (TST) results reported"
-		disp "If using for academic/research purposes, please cite the paper underlying this program:"
-		disp "Fitzgerald, Jack (2024). The Need for Equivalence Testing in Economics. Institute for Replication Discussion Paper Series No. 125. https://www.econstor.eu/handle/10419/296190."
+		disp "If using for academic/research purposes, please cite the papers underlying this program:"
+		disp "Fitzgerald, J. (2025). The Need for Equivalence Testing in Economics. MetaArXiv, https://doi.org/10.31222/osf.io/d7sqr_v1."
+		disp "Isager, P. & Fitzgerald, J. (2024). Three-Sided Testing to Establish Practical Significance: A Tutorial. https://doi.org/10.31234/osf.io/8y925."
 		
 	}
 	
@@ -353,9 +430,10 @@ program define tsti, rclass
 	return local ROPE_LB = `rope_lb'
 	return local ROPE_UB = `rope_ub'
 	return local alpha = `alpha'
-	return local power = `power'
-	return local CI_LB = `CI_LB'
-	return local CI_UB = `CI_UB'
+	return local CI_classic_LB = `CI_classic_LB'
+	return local CI_classic_UB = `CI_classic_UB'
+	return local CI_TST_LB = `CI_TST_LB'
+	return local CI_TST_UB = `CI_TST_UB'
 	return local ECI_LB = `ECI_LB'
 	return local ECI_UB = `ECI_UB'
 	return local ts_above = test_mat[1, 1]
