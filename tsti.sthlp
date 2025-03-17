@@ -42,7 +42,7 @@
 
 {p 4 4 2}
 Jack Fitzgerald     {break}
-Vrije Universiteit Amsterdam     {break}
+Vrije Universiteit Amsterdam and Tinbergen Institute    {break}
 j.f.fitzgerald@vu.nl    {break}
 {browse "https://jack-fitzgerald.github.io":https://jack-fitzgerald.github.io} 
 
