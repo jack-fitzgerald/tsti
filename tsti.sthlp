@@ -38,6 +38,7 @@
 webuse nlswork, clear
 cap ssc install did_imputation
 gen year_u = year if union == 1
+bysort idcode: egen union_year = min(year_u)
 
 *Run imputation DID and store effect of obtaining union membership on inflation-adjusted log wages and weekly work hours
 did_imputation ln_wage idcode year union_year, fe(idcode year) autosample
