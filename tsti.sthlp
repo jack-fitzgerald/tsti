@@ -34,9 +34,25 @@
 
 {title:Examples}
 
-        . tsti 0.02 0.03 -0.2 0.2
+*Load Natinal Longitudinal Survey of Young Women, 14-24 in 1968, and set up for imputation DID
+webuse nlswork, clear
+cap ssc install did_imputation
+gen year_u = year if union == 1
 
-        . tsti -0.4 0.01 0 0.5
+*Run imputation DID and store effect of obtaining union membership on inflation-adjusted log wages and weekly work hours
+did_imputation ln_wage idcode year union_year, fe(idcode year) autosample
+local beta_ln_wage = r(table)[1, 1]
+local se_ln_wage = r(table)[2, 1]
+did_imputation hours idcode year union_year, fe(idcode year) autosample
+local beta_hours = r(table)[1, 1]
+local se_hours = r(table)[2, 1]
+
+*If we think that the smallest effect of unionization on weekly working hours that is practically meaningful is four hours...
+tsti `beta_ln_wage' `se_ln_wage' -4 4
+
+*If we think that the smallest effect of unionization on wages that is practically meaningful is 5%...
+tsti `beta_ln_wage' `se_ln_wage' -.05129329 .05129329
+*.05129329 = ln(1.05); mathematical expressions must be pre-evaluated as tsti only accepts numerics
 
 {title:Author}
 
@@ -46,7 +62,7 @@ Vrije Universiteit Amsterdam and Tinbergen Institute    {break}
 j.f.fitzgerald@vu.nl    {break}
 {browse "https://jack-fitzgerald.github.io":https://jack-fitzgerald.github.io} 
 
-{References}
+{title:References}
 Fitzgerald, J. (2025). "The Need for Equivalence Testing in Economics". MetaArXiv, https://doi.org/10.31222/osf.io/d7sqr_v1.
 Goeman, J. J., Solari, A., and Stijnen, T. (2010). "Three-sided hypothesis testing: Simultaneous testing of superiority, equivalence and inferiority." Statistics in Medicine 29(20), 2117-2125.
 Isager, P. & Fitzgerald, J. (2024). "Three-Sided Testing to Establish Practical Significance: A Tutorial." PsyArXiv, https://doi.org/10.31234/osf.io/8y925.
