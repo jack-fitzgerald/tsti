@@ -202,7 +202,7 @@ program define tsti, rclass
 		if (test_mat[1, 2] >= `alpha' & test_mat[2, 2] >= `alpha' & test_mat[3, 2] >= `alpha') {
 			
 			*Then store the conclusion
-			local conclusion "The significance of the estimate is inconclusive."
+			local conclusion "The practical significance of the estimate is inconclusive."
 			
 		}
 		
@@ -360,7 +360,7 @@ program define tsti, rclass
 		if (test_mat[1, 2] >= `alpha' & test_mat[2, 2] >= `alpha' & test_mat[3, 2] >= `alpha') {
 			
 			*Then store the conclusion
-			local conclusion "The significance of the estimate is inconclusive."
+			local conclusion "The practical significance of the estimate is inconclusive."
 			
 		}
 		
