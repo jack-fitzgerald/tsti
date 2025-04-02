@@ -18,7 +18,7 @@ program define tsti, rclass
 	if (`se' <= 0) {
 		
 		*... then stop the function
-		display "'se' must be strictly greater than zero"
+		display "{it:se} must be strictly greater than zero"
 		exit
 		
 	}
@@ -27,7 +27,7 @@ program define tsti, rclass
 	if (`rope_lb' >= `rope_ub') {
 		
 		*... then stop the function
-		display "'rope_lb' must be strictly less than 'rope_ub'"
+		display "{it:rope_lb} must be strictly less than {it:rope_ub}"
 		exit
 		
 	}
@@ -42,7 +42,7 @@ program define tsti, rclass
 	if (`alpha' <= 0 | `alpha' >= 0.5) {
 		
 		*... then stop the function
-		display "'alpha' must be between 0 and 0.5"
+		display "{opt alpha()} must be between 0 and 0.5"
 		exit
 		
 	}
@@ -273,7 +273,7 @@ program define tsti, rclass
 		if (`df' <= 0) {
 			
 			*... then stop the function
-			display "If 'df' is specified, then it must be greater than zero"
+			display "If {opt df()} is specified, then it must be greater than zero"
 			exit
 			
 		}
