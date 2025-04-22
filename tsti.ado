@@ -80,15 +80,16 @@ program define tsti, rclass
 	local confidence_pct = round(1 - `alpha', .01)*100
 	
 	*Generate a test matrix
-	matrix test_mat = J(3, 3, .)
+	tempname test_mat
+	matrix `test_mat' = J(3, 3, .)
 	
 	*If the estimate is located above the ROPE...
 	if (`estimate' > `rope_ub') {
 		
 		*Then designate the test for bounding above the ROPE as relevant and the other two tests as irrelevant
-		mat test_mat[1, 3] = 1
-		mat test_mat[2, 3] = 0
-		mat test_mat[3, 3] = 0
+		mat `test_mat'[1, 3] = 1
+		mat `test_mat'[2, 3] = 0
+		mat `test_mat'[3, 3] = 0
 		
 	}
 	
@@ -96,9 +97,9 @@ program define tsti, rclass
 	if (`estimate' < `rope_lb') {
 		
 		*Then designate the test for bounding below the ROPE as relevant and the other two tests as irrelevant
-		mat test_mat[1, 3] = 0
-		mat test_mat[2, 3] = 0
-		mat test_mat[3, 3] = 1
+		mat `test_mat'[1, 3] = 0
+		mat `test_mat'[2, 3] = 0
+		mat `test_mat'[3, 3] = 1
 		
 	}
 	
@@ -106,9 +107,9 @@ program define tsti, rclass
 	if (`estimate' <= `rope_ub' & `estimate' >= `rope_lb') {
 		
 		*Then designate the TOST p-value as relevant and the other two tests as irrelevant
-		mat test_mat[1, 3] = 0
-		mat test_mat[2, 3] = 1
-		mat test_mat[3, 3] = 0
+		mat `test_mat'[1, 3] = 0
+		mat `test_mat'[2, 3] = 1
+		mat `test_mat'[3, 3] = 0
 		
 	}
 	
@@ -171,16 +172,16 @@ program define tsti, rclass
 		
 		
 		*Store the z-statistic and p-value of the two-sided test for bounding above the ROPE
-		mat test_mat[1, 1] = (`estimate' - `rope_ub')/`se'
-		mat test_mat[1, 2] = min((1 - normal(test_mat[1, 1]))*2, 1)
+		mat `test_mat'[1, 1] = (`estimate' - `rope_ub')/`se'
+		mat `test_mat'[1, 2] = min((1 - normal(`test_mat'[1, 1]))*2, 1)
 		
 		*If the lower bound of the ROPE is the relevant TOST bound...
 		if (`bound' == `rope_lb') {
 			
 			*Then store the z-statistic as estimate - min(ROPE) in standard error units...
-			mat test_mat[2, 1] = (`estimate' - `rope_lb')/`se'
+			mat `test_mat'[2, 1] = (`estimate' - `rope_lb')/`se'
 			*... and store the p-value of the one-sided test in the upper tail
-			mat test_mat[2, 2] = 1 - normal(test_mat[2, 1])
+			mat `test_mat'[2, 2] = 1 - normal(`test_mat'[2, 1])
 			
 		}
 		
@@ -188,18 +189,18 @@ program define tsti, rclass
 		if (`bound' == `rope_ub') {
 			
 			*Then store the z-statistic as estimate - max(ROPE) in standard error units...
-			mat test_mat[2, 1] = (`estimate' - `rope_ub')/`se'
+			mat `test_mat'[2, 1] = (`estimate' - `rope_ub')/`se'
 			*... and store the p-value of the one-sided test in the lower tail
-			mat test_mat[2, 2] = normal(test_mat[2, 1])
+			mat `test_mat'[2, 2] = normal(`test_mat'[2, 1])
 			
 		}
 		
 		*Store the z-statistic and p-value of the two-sided test for bounding below the ROPE
-		mat test_mat[3, 1] = (`estimate' - `rope_lb')/`se'
-		mat test_mat[3, 2] = min(normal(test_mat[3, 1])*2, 1)
+		mat `test_mat'[3, 1] = (`estimate' - `rope_lb')/`se'
+		mat `test_mat'[3, 2] = min(normal(`test_mat'[3, 1])*2, 1)
 		
 		*If no p-value is < alpha...
-		if (test_mat[1, 2] >= `alpha' & test_mat[2, 2] >= `alpha' & test_mat[3, 2] >= `alpha') {
+		if (`test_mat'[1, 2] >= `alpha' & `test_mat'[2, 2] >= `alpha' & `test_mat'[3, 2] >= `alpha') {
 			
 			*Then store the conclusion
 			local conclusion "The practical significance of the estimate is inconclusive."
@@ -207,7 +208,7 @@ program define tsti, rclass
 		}
 		
 		*If the p-value of the two-sided test for bounding above the ROPE < alpha...
-		if (test_mat[1, 2] < `alpha') {
+		if (`test_mat'[1, 2] < `alpha') {
 			
 			*Then store the conclusion
 			local conclusion "The estimate is significantly bounded above the ROPE."
@@ -215,7 +216,7 @@ program define tsti, rclass
 		}
 		
 		*If the p-value of the TOST procedure < alpha...
-		if (test_mat[2, 2] < `alpha') {
+		if (`test_mat'[2, 2] < `alpha') {
 			
 			*Then store the conclusion
 			local conclusion "The estimate is significantly bounded within the ROPE."
@@ -223,7 +224,7 @@ program define tsti, rclass
 		}
 		
 		*If the p-value of the two-sided test for bounding below the ROPE < alpha...
-		if (test_mat[3, 2] < `alpha') {
+		if (`test_mat'[3, 2] < `alpha') {
 			
 			*Then store the conclusion
 			local conclusion "The estimate is significantly bounded below the ROPE."
@@ -249,9 +250,9 @@ program define tsti, rclass
 		disp ""
 		disp in smcl in gr "{ralign 46: Testing results}" 							   _col(47) " {c |} " _col(52) in gr "z-statistic"			  _col(67) in gr "p-value"	    _col(80) in gr "Relevant"
 		disp in smcl in gr "{hline 47}{c +}{hline 40}"
-		disp in smcl in gr "{ralign 46:Test: Estimate bounded above ROPE (two-sided)}" _col(47) " {c |} " _col(52) as result %9.3f test_mat[1, 1] _col(64) %9.3f test_mat[1, 2]	_col(76) %9.0f  test_mat[1, 3]
-		disp in smcl in gr "{ralign 46:Test: Estimate bounded within ROPE (TOST)}"     _col(47) " {c |} " _col(52) as result %9.3f test_mat[2, 1] _col(64) %9.3f test_mat[2, 2]	_col(76) %9.0f  test_mat[2, 3]
-		disp in smcl in gr "{ralign 46:Test: Estimate bounded below ROPE (two-sided)}" _col(47) " {c |} " _col(52) as result %9.3f test_mat[3, 1] _col(64) %9.3f test_mat[3, 2]	_col(76) %9.0f  test_mat[3, 3]
+		disp in smcl in gr "{ralign 46:Test: Estimate bounded above ROPE (two-sided)}" _col(47) " {c |} " _col(52) as result %9.3f `test_mat'[1, 1] _col(64) %9.3f `test_mat'[1, 2]	_col(76) %9.0f  `test_mat'[1, 3]
+		disp in smcl in gr "{ralign 46:Test: Estimate bounded within ROPE (TOST)}"     _col(47) " {c |} " _col(52) as result %9.3f `test_mat'[2, 1] _col(64) %9.3f `test_mat'[2, 2]	_col(76) %9.0f  `test_mat'[2, 3]
+		disp in smcl in gr "{ralign 46:Test: Estimate bounded below ROPE (two-sided)}" _col(47) " {c |} " _col(52) as result %9.3f `test_mat'[3, 1] _col(64) %9.3f `test_mat'[3, 2]	_col(76) %9.0f  `test_mat'[3, 3]
 		
 		*************************
 		*** PRINT DISCLAIMERS ***
@@ -329,16 +330,16 @@ program define tsti, rclass
 		local CI_classic_UB = `estimate' + invt(`df', 1 - `alpha'/2)*`se'
 		
 		*Store the t-statistic and p-value of the two-sided test for bounding above the ROPE
-		mat test_mat[1, 1] = (`estimate' - `rope_ub')/`se'
-		mat test_mat[1, 2] = min((1 - t(`df', test_mat[1, 1]))*2, 1)
+		mat `test_mat'[1, 1] = (`estimate' - `rope_ub')/`se'
+		mat `test_mat'[1, 2] = min((1 - t(`df', `test_mat'[1, 1]))*2, 1)
 		
 		*If the lower bound of the ROPE is the relevant TOST bound...
 		if (`bound' == `rope_lb') {
 			
 			*Then store the t-statistic as estimate - min(ROPE) in standard error units...
-			mat test_mat[2, 1] = (`estimate' - `rope_lb')/`se'
+			mat `test_mat'[2, 1] = (`estimate' - `rope_lb')/`se'
 			*... and store the p-value of the one-sided test in the upper tail
-			mat test_mat[2, 2] = 1 - t(`df', test_mat[2, 1])
+			mat `test_mat'[2, 2] = 1 - t(`df', `test_mat'[2, 1])
 			
 		}
 		
@@ -346,18 +347,18 @@ program define tsti, rclass
 		if (`bound' == `rope_ub') {
 			
 			*Then store the t-statistic as estimate - max(ROPE) in standard error units...
-			mat test_mat[2, 1] = (`estimate' - `rope_ub')/`se'
+			mat `test_mat'[2, 1] = (`estimate' - `rope_ub')/`se'
 			*... and store the p-value of the one-sided test in the upper tail
-			mat test_mat[2, 2] = t(`df', test_mat[2, 1])
+			mat `test_mat'[2, 2] = t(`df', `test_mat'[2, 1])
 			
 		}
 		
 		*Store the t-statistic and p-value of the two-sided test for bounding below the ROPE
-		mat test_mat[3, 1] = (`estimate' - `rope_lb')/`se'
-		mat test_mat[3, 2] = min(t(`df', test_mat[3, 1])*2, 1)
+		mat `test_mat'[3, 1] = (`estimate' - `rope_lb')/`se'
+		mat `test_mat'[3, 2] = min(t(`df', `test_mat'[3, 1])*2, 1)
 		
 		*If no p-value is < alpha...
-		if (test_mat[1, 2] >= `alpha' & test_mat[2, 2] >= `alpha' & test_mat[3, 2] >= `alpha') {
+		if (`test_mat'[1, 2] >= `alpha' & `test_mat'[2, 2] >= `alpha' & `test_mat'[3, 2] >= `alpha') {
 			
 			*Then store the conclusion
 			local conclusion "The practical significance of the estimate is inconclusive."
@@ -365,7 +366,7 @@ program define tsti, rclass
 		}
 		
 		*If the p-value of the two-sided test for bounding above the ROPE < alpha...
-		if (test_mat[1, 2] < `alpha') {
+		if (`test_mat'[1, 2] < `alpha') {
 			
 			*Then store the conclusion
 			local conclusion "The estimate is significantly bounded above the ROPE."
@@ -373,7 +374,7 @@ program define tsti, rclass
 		}
 		
 		*If the p-value of the TOST procedure < alpha...
-		if (test_mat[2, 2] < `alpha') {
+		if (`test_mat'[2, 2] < `alpha') {
 			
 			*Then store the conclusion
 			local conclusion "The estimate is significantly bounded within the ROPE."
@@ -381,7 +382,7 @@ program define tsti, rclass
 		}
 		
 		*If the p-value of the two-sided test for bounding below the ROPE < alpha...
-		if (test_mat[3, 2] < `alpha') {
+		if (`test_mat'[3, 2] < `alpha') {
 			
 			*Then store the conclusion
 			local conclusion "The estimate is significantly bounded below the ROPE."
@@ -407,9 +408,9 @@ program define tsti, rclass
 		disp ""
 		disp in smcl in gr "{ralign 46: Testing results}" 							   _col(47) " {c |} " _col(52) in gr "z-statistic"			  _col(67) in gr "p-value"	    _col(80) in gr "Relevant"
 		disp in smcl in gr "{hline 47}{c +}{hline 40}"
-		disp in smcl in gr "{ralign 46:Test: Estimate bounded above ROPE (two-sided)}" _col(47) " {c |} " _col(52) as result %9.3f test_mat[1, 1] _col(64) %9.3f test_mat[1, 2]	_col(76) %9.0f  test_mat[1, 3]
-		disp in smcl in gr "{ralign 46:Test: Estimate bounded within ROPE (TOST)}"     _col(47) " {c |} " _col(52) as result %9.3f test_mat[2, 1] _col(64) %9.3f test_mat[2, 2]	_col(76) %9.0f  test_mat[2, 3]
-		disp in smcl in gr "{ralign 46:Test: Estimate bounded below ROPE (two-sided)}" _col(47) " {c |} " _col(52) as result %9.3f test_mat[3, 1] _col(64) %9.3f test_mat[3, 2]	_col(76) %9.0f  test_mat[3, 3]
+		disp in smcl in gr "{ralign 46:Test: Estimate bounded above ROPE (two-sided)}" _col(47) " {c |} " _col(52) as result %9.3f `test_mat'[1, 1] _col(64) %9.3f `test_mat'[1, 2]	_col(76) %9.0f  `test_mat'[1, 3]
+		disp in smcl in gr "{ralign 46:Test: Estimate bounded within ROPE (TOST)}"     _col(47) " {c |} " _col(52) as result %9.3f `test_mat'[2, 1] _col(64) %9.3f `test_mat'[2, 2]	_col(76) %9.0f  `test_mat'[2, 3]
+		disp in smcl in gr "{ralign 46:Test: Estimate bounded below ROPE (two-sided)}" _col(47) " {c |} " _col(52) as result %9.3f `test_mat'[3, 1] _col(64) %9.3f `test_mat'[3, 2]	_col(76) %9.0f  `test_mat'[3, 3]
 		
 		*************************
 		*** PRINT DISCLAIMERS ***
@@ -436,15 +437,15 @@ program define tsti, rclass
 	return local CI_TST_UB = `CI_TST_UB'
 	return local ECI_LB = `ECI_LB'
 	return local ECI_UB = `ECI_UB'
-	return local ts_above = test_mat[1, 1]
-	return local p_above = test_mat[1, 2]
-	return local relevant_above = test_mat[1, 3]
-	return local ts_TOST = test_mat[2, 1]
-	return local p_TOST = test_mat[2, 2]
-	return local relevant_TOST = test_mat[2, 3]
-	return local ts_below = test_mat[3, 1]
-	return local p_below = test_mat[3, 2]
-	return local relevant_below = test_mat[3, 3]
+	return local ts_above = `test_mat'[1, 1]
+	return local p_above = `test_mat'[1, 2]
+	return local relevant_above = `test_mat'[1, 3]
+	return local ts_TOST = `test_mat'[2, 1]
+	return local p_TOST = `test_mat'[2, 2]
+	return local relevant_TOST = `test_mat'[2, 3]
+	return local ts_below = `test_mat'[3, 1]
+	return local p_below = `test_mat'[3, 2]
+	return local relevant_below = `test_mat'[3, 3]
 	return local conclusion `conclusion'
 	
 	end
