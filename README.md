@@ -1,11 +1,11 @@
 # tsti: Three-sided testing in Stata
 
-**This command can be downloaded from SSC using the following code:**
+**This command can be downloaded from SSC using the following Stata code:**
 ```
 ssc install tsti
 ```
 
-Alternatively, you can install this package from GitHub into Stata with the following code:
+Alternatively, you can install this package from GitHub with the following Stata code:
 ```
 net install tsti, from("https://raw.githubusercontent.com/jack-fitzgerald/tsti/main/") replace
 ```
